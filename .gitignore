@@ -1,0 +1,4 @@
+test.js
+.vscode/
+node_modules/
+service-account.json
