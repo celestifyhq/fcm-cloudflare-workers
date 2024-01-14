@@ -1,7 +1,7 @@
 {
   "name": "fcm-http2",
   "version": "1.0.0",
-  "description": "Send multicast notifications using HTTP/2 multiplexing through the FCM HTTP v1 API.",
+  "description": "Library for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://gitlab.com/kenble/fcm-http2/-/issues"
   },
-  "homepage": "https://gitlab.com/kenble/fcm-http2#readme",
+  "homepage": "https://gitlab.com/kenble/fcm-http2/-/blob/main/README.md",
   "dependencies": {
     "async": "^3.2.5",
     "googleapis": "^130.0.0"
