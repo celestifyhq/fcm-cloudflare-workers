@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://gitlab.com/kenble/fcm-http2.git"
   },
+  "scripts": {
+    "test": "node test.js"
+  },
   "author": "Taddia Francesco <fctaddia@duck.com>",
   "license": "Apache-2.0",
   "bugs": {
