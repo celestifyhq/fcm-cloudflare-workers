@@ -1,6 +1,6 @@
 {
   "name": "fcm-http2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
   "main": "index.js",
   "repository": {
