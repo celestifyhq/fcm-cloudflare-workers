@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/fcm-http2.svg)](https://badge.fury.io/js/fcm-http2)
 
-Library for sending multicast notifications using HTTP/2 multiplexing and the [FCM HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send).
+Library in typescript for sending multicast notifications using HTTP/2 multiplexing and the [FCM HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send).
 
 Features supported by **fcm-http2**:
 
@@ -23,7 +23,8 @@ Once the library has been installed you can start using it in this way:
 
 ```js
 // FCM library recovery
-const FCM = require('fcm-http2');
+import { FCM } from 'src/lib/fcm';
+import { FcmOptions } from 'src/entity/fcm-options';
 
 // Init FCM with default options
 // NOTE: Put the service-account.json file in the package's lib directory
@@ -31,14 +32,17 @@ const fcmClient = new FCM();
 
 // Or you can specify options
 
-const fcmClient = new FCM({
+const fcmOptions = new FcmOptions(
     // Pass in your service account JSON private key file (https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk)
     serviceAccount: require('./service-account.json'),
     // Max number of concurrent HTTP/2 sessions (connections)
     maxConcurrentConnections: 10,
     // Max number of concurrent streams (requests) per session
     maxConcurrentStreamsAllowed: 100
-});
+);
+
+const fcmClient = new FCM(fcmOptions);
+
 
 // Token to send the notification to
 const tokens = ['TOKEN_1', 'TOKEN_N'];
