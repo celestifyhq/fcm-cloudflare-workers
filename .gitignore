@@ -1,4 +1,5 @@
-test.js
+dist/*
+test/*
 .vscode/
 node_modules/
-service-account.json
+src/lib/service-account.json

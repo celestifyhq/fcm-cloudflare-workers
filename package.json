@@ -1,14 +1,20 @@
 {
   "name": "fcm-http2",
-  "version": "1.0.1",
-  "description": "Library for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Library in typescript for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://gitlab.com/kenble/fcm-http2.git"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "npx ts-node test/test.ts",
+    "build": "tsc",
+    "publish-lib": "npm run build && npm publish"
   },
   "author": "Taddia Francesco <fctaddia@duck.com>",
   "license": "Apache-2.0",
@@ -16,8 +22,19 @@
     "url": "https://gitlab.com/kenble/fcm-http2/-/issues"
   },
   "homepage": "https://gitlab.com/kenble/fcm-http2/-/blob/main/README.md",
+  "keywords": [
+    "fcm",
+    "firebase",
+    "typescript",
+    "library"
+  ],
   "dependencies": {
     "async": "^3.2.5",
-    "googleapis": "^130.0.0"
+    "googleapis": "^131.0.0"
+  },
+  "devDependencies": {
+    "@types/async": "^3.2.24",
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
   }
 }
