@@ -175,7 +175,7 @@ export class FCM {
     /**
      * Sends notifications to a batch of tokens using HTTP/2.
      *
-     * @author Cineca - f.taddia
+     * @author Kenble - f.taddia
      * @param message to notify
      * @param devices : list of devices to send the notification to
      * @param projectId : project id in the fcm console
@@ -234,7 +234,7 @@ export class FCM {
     /**
      * Sends a single notification over an existing HTTP/2 client.
      *
-     * @author Cineca - f.taddia
+     * @author Kenble - f.taddia
      * @param client : http2 client with which to call the fcm api
      * @param device : device to send the notification to
      * @param message to send

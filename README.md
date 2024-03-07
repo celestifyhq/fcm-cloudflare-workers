@@ -76,6 +76,10 @@ fcmClient.sendMulticast(message, tokens).then(unregisteredTokens => {
 
 * Node.js >= 12
 
+## Contributions
+
+Thanks to [eladnava](https://github.com/eladnava) for contributing to the source code base of this library.
+
 ## Support
 
 For any doubts open an issue or contact this email **fctaddia@duck.com**

@@ -1,7 +1,7 @@
 /**
  * Entity for Firebase Cloud Messaging options.
  *
- * @author Cineca - f.taddia
+ * @author Kenble - f.taddia
  */
 export class FcmOptions {
 
