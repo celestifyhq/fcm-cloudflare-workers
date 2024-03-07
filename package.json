@@ -30,11 +30,11 @@
   ],
   "dependencies": {
     "async": "^3.2.5",
-    "googleapis": "^131.0.0"
+    "googleapis": "^133.0.0"
   },
   "devDependencies": {
     "@types/async": "^3.2.24",
-    "@types/node": "^20.11.5",
-    "typescript": "^5.3.3"
+    "@types/node": "^20.11.25",
+    "typescript": "^5.4.2"
   }
 }
