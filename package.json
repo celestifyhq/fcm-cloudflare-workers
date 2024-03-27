@@ -1,6 +1,6 @@
 {
   "name": "fcm-http2",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Library in typescript for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
