@@ -69,6 +69,16 @@ export class FCM {
         // Promisify method
         return new Promise<Array<string>>((resolve, reject) => {
 
+            // Check the validity of the message
+            if (!message) {
+                reject(new Error('Message is mandatory'));
+            }
+
+            // Check the validity of the token array
+            if (tokens?.length <= 0) {
+                reject(new Error('Token array is mandatory'));
+            }
+
             // Calculate max devices per batch, and prepare batches array
             let batchLimit = Math.ceil(tokens.length / this.fcmOptions.maxConcurrentConnections), tokenBatches: any[] = [];
 
