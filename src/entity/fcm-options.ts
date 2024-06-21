@@ -1,3 +1,5 @@
+import { FcmServiceAccount } from "./fcm-service-account";
+
 /**
  * Entity for Firebase Cloud Messaging options.
  *
@@ -5,7 +7,7 @@
  */
 export class FcmOptions {
 
-    serviceAccount: any;
+    serviceAccount?: FcmServiceAccount;
 
     maxConcurrentConnections: number;
 
@@ -13,7 +15,6 @@ export class FcmOptions {
 
 
     constructor(entity?: FcmOptions) {
-        this.serviceAccount = null;
         this.maxConcurrentConnections = 10;
         this.maxConcurrentStreamsAllowed = 100;
         if (entity) {

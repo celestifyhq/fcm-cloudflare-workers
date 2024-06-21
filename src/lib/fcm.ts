@@ -1,8 +1,9 @@
 import async from 'async';
 import http2 from 'http2';
 import { google } from 'googleapis';
-import { FcmOptions } from '../entity/fcm-options';
 import { FcmClient } from '../entity/fcm-client';
+import { FcmOptions } from '../entity/fcm-options';
+import { FcmServiceAccount } from '../entity/fcm-service-account';
 
 /**
  * Class for sending a notification to multiple devices using HTTP/2 multiplexing.
@@ -38,7 +39,7 @@ export class FCM {
      * file present in the library directory is read
      */
     constructor(options?: FcmOptions) {
-        
+
         if (options) {
             // Enhance fcmOptions with the user-specified object
             this.fcmOptions.serviceAccount = options.serviceAccount;
@@ -79,8 +80,11 @@ export class FCM {
                 reject(new Error('Token array is mandatory'));
             }
 
-            // Calculate max devices per batch, and prepare batches array
-            let batchLimit = Math.ceil(tokens.length / this.fcmOptions.maxConcurrentConnections), tokenBatches: any[] = [];
+            // Prepare batches array
+            const tokenBatches: any[] = [];
+
+            // Calculate max devices per batch
+            let batchLimit = Math.ceil(tokens.length / this.fcmOptions.maxConcurrentConnections);
 
             // Use just one batch/HTTP2 connection if batch limit is less than maxConcurrentStreamsAllowed
             if (batchLimit <= this.fcmOptions.maxConcurrentStreamsAllowed) {
@@ -93,10 +97,10 @@ export class FCM {
             }
 
             // Keep track of unregistered device tokens
-            let unregisteredTokens: Array<string> = [];
+            const unregisteredTokens: Array<string> = [];
 
             // Get Firebase project ID from service account credentials
-            let projectId = this.fcmOptions.serviceAccount.project_id;
+            const projectId = this.fcmOptions.serviceAccount?.project_id;
 
             // Ensure we have a project ID
             if (!projectId) {
@@ -104,18 +108,18 @@ export class FCM {
             }
 
             // Get OAuth2 token
-            this.getAccessToken(this.fcmOptions.serviceAccount).then((accessToken) => {
+            this.getAccessToken(this.fcmOptions.serviceAccount!!).then((accessToken) => {
 
                 // Count batches to determine when all notifications have been sent
                 let done = 0;
 
                 // Send notification using HTTP/2 multiplexing
-                for (let tokenBatch of tokenBatches) {
+                tokenBatches.forEach(tokenBatch => {
 
                     // Send notification to current token batch
                     this.processBatch(message, tokenBatch, projectId, accessToken).then((unregisteredTokensList: Array<string>) => {
 
-                        unregisteredTokensList.join()
+                        unregisteredTokensList.join();
 
                         // Add unregistred tokens (if any)
                         if (unregisteredTokensList.length > 0) {
@@ -135,7 +139,7 @@ export class FCM {
                         reject(err);
                     });
 
-                }
+                });
 
             }).catch((err) => {
                 // Failed to generate OAuth2 token
@@ -154,7 +158,7 @@ export class FCM {
      * @param serviceAccount : object with information for authenticating to the Firebase Cloud Messaging APIs
      * @returns returns the access token
      */
-    private getAccessToken(serviceAccount: any) {
+    private getAccessToken(serviceAccount: FcmServiceAccount) {
 
         // Promisify method
         return new Promise<string>((resolve, reject) => {
@@ -293,7 +297,7 @@ export class FCM {
         const me = this;
 
         // Define error handler
-        const errorHandler = function (err: any) {
+        const errorHandler = (err: any) => {
 
             // Retry up to 3 times
             if (tries <= 3) {
@@ -322,9 +326,6 @@ export class FCM {
             // Even if request failed, mark request as completed as we've already retried 3 times
             doneCallback(err);
         }
-
-        // Keep track of called args for retry mechanism
-        const args = arguments;
 
         // Response received in full
         request.on('end', () => {
