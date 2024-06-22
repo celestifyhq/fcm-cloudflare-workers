@@ -312,7 +312,7 @@ export class FCM {
 
                 // If HTTP2 session destroyed, open a new one
                 if (client.destroyed) {
-                    // Crate new HTTP/2 session just for this failed device
+                    // Create new HTTP/2 session just for this failed device
                     return me.processBatch(message, [device], projectId, accessToken).finally(doneCallback);
                 }
 
@@ -330,8 +330,24 @@ export class FCM {
         // Response received in full
         request.on('end', () => {
             try {
+                const internalServerError = 'Internal Server Error';
+
+                // Server-side error? (may be returned as HTML, so search text explicitly before try parsing from JSON)
+                if (data.toLowerCase().includes('server error')) {
+                    return errorHandler(new Error(internalServerError));
+                }
+
                 // Convert response body to JSON object
                 const response = JSON.parse(data);
+
+                // Extract status code from JSON response object
+                const statusCode = response.statusCode ?? response.status;
+
+                // FCM service temporarily unavailable
+                if (statusCode && statusCode >= 500) {
+                    // Retry request using same HTTP2 session in 10 seconds
+                    return errorHandler(new Error(`${statusCode} ${internalServerError}`));
+                }
 
                 // Error?
                 if (response.error) {
