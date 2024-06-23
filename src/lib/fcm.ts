@@ -93,7 +93,7 @@ export class FCM {
 
             // Traverse tokens and split them up into batches of X devices each  
             for (let start = 0; start < tokens.length; start += batchLimit) {
-                tokenBatches.push(tokens.slice(start, start + batchLimit));
+                tokenBatches.push([...tokens.slice(start, start + batchLimit)]);
             }
 
             // Keep track of unregistered device tokens
