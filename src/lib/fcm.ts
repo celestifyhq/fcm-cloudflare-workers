@@ -65,7 +65,7 @@ export class FCM {
      * @param tokens to send the notification to
      * @returns returns the list of tokens not registered in fcm
      */
-    sendMulticast(message: any, tokens: Array<string>): Promise<Array<string>> {
+    sendMulticast(message: object, tokens: Array<string>): Promise<Array<string>> {
 
         // Promisify method
         return new Promise<Array<string>>((resolve, reject) => {
@@ -81,7 +81,7 @@ export class FCM {
             }
 
             // Prepare batches array
-            const tokenBatches: any[] = [];
+            const tokenBatches: Array<Array<string>> = [];
 
             // Calculate max devices per batch
             let batchLimit = Math.ceil(tokens.length / this.fcmOptions.maxConcurrentConnections);
@@ -118,8 +118,6 @@ export class FCM {
 
                     // Send notification to current token batch
                     this.processBatch(message, tokenBatch, projectId, accessToken).then((unregisteredTokensList: Array<string>) => {
-
-                        unregisteredTokensList.join();
 
                         // Add unregistred tokens (if any)
                         if (unregisteredTokensList.length > 0) {
