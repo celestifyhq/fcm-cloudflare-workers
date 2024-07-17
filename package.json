@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/async": "~3.2.24",
-    "@types/node": "~20.14.9",
+    "@types/node": "~20.14.11",
     "typescript": "~5.5.3"
   }
 }
