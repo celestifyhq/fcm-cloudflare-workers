@@ -108,7 +108,7 @@ export class FCM {
             }
 
             // Get OAuth2 token
-            this.getAccessToken(this.fcmOptions.serviceAccount!!).then((accessToken) => {
+            this.getAccessToken(this.fcmOptions.serviceAccount!!).then(accessToken => {
 
                 // Count batches to determine when all notifications have been sent
                 let done = 0;
@@ -132,14 +132,14 @@ export class FCM {
                             resolve(unregisteredTokens);
                         }
 
-                    }).catch((err) => {
+                    }).catch(err => {
                         // Reject promise with error
                         reject(err);
                     });
 
                 });
 
-            }).catch((err) => {
+            }).catch(err => {
                 // Failed to generate OAuth2 token
                 // most likely due to invalid credentials provided
                 reject(err);
@@ -205,7 +205,7 @@ export class FCM {
             });
 
             // Log connection errors
-            client.on('error', (err) => {
+            client.on('error', err => {
                 // Connection reset?
                 if (err.message.includes('ECONNRESET')) {
                     // Log temporary connection errors to console (retry mechanism inside sendRequest will take care of retrying)
@@ -217,7 +217,7 @@ export class FCM {
             });
 
             // Log socket errors
-            client.on('socketError', (err) => reject(err));
+            client.on('socketError', err => reject(err));
 
             // Keep track of unregistered device tokens
             client.unregisteredTokens = [];
@@ -226,7 +226,7 @@ export class FCM {
             async.eachLimit(devices, this.fcmOptions.maxConcurrentStreamsAllowed, (device, doneCallback) => {
                 // Create a HTTP/2 request per device token
                 this.sendRequest(client, device, message, projectId, accessToken, doneCallback, 0);
-            }, (err) => {
+            }, err => {
                 // All requests completed, close the HTTP2 client
                 client.close();
 
@@ -286,7 +286,7 @@ export class FCM {
         let data = '';
 
         // Add each incoming chunk to response data
-        request.on('data', (chunk) => data += chunk);
+        request.on('data', chunk => data += chunk);
 
         // Keep track of whether we are already retrying this method invocation
         let retrying = false;
@@ -371,7 +371,7 @@ export class FCM {
         });
 
         // Log request errors
-        request.on('error', (err) => {
+        request.on('error', err => {
             // Invoke error handler with retry mechanism
             errorHandler(err);
         });
