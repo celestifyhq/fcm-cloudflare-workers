@@ -29,12 +29,12 @@
     "library"
   ],
   "dependencies": {
-    "async": "~3.2.5",
-    "googleapis": "~140.0.1"
+    "async": "~3.2.6",
+    "googleapis": "~142.0.0"
   },
   "devDependencies": {
     "@types/async": "~3.2.24",
-    "@types/node": "~20.14.11",
-    "typescript": "~5.5.3"
+    "@types/node": "~22.5.0",
+    "typescript": "~5.5.4"
   }
 }
