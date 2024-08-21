@@ -222,8 +222,8 @@ export class FCM {
             // Keep track of unregistered device tokens
             client.unregisteredTokens = [];
 
-            // Use async/eachLimit to iterate over device tokens
-            async.eachLimit(devices, this.fcmOptions.maxConcurrentStreamsAllowed, (device, doneCallback) => {
+            // Use async/each to iterate over device tokens
+            async.each(devices, (device, doneCallback) => {
                 // Create a HTTP/2 request per device token
                 this.sendRequest(client, device, message, projectId, accessToken, doneCallback, 0);
             }, err => {
