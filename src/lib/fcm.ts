@@ -201,7 +201,7 @@ export class FCM {
 
             // Create an HTTP2 client and connect to FCM API
             const client: FcmClient = http2.connect(this.fcmHost, {
-                peerMaxConcurrentStreams: this.fcmOptions.maxConcurrentConnections
+                peerMaxConcurrentStreams: this.fcmOptions.maxConcurrentStreamsAllowed
             });
 
             // Log connection errors
