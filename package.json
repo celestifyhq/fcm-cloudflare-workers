@@ -1,40 +1,46 @@
 {
-  "name": "fcm-http2",
-  "version": "2.1.6",
-  "description": "Library in typescript for sending multicast notifications using HTTP/2 multiplexing and the FCM HTTP v1 API.",
+  "name": "fcm-cloudflare-workers",
+  "version": "1.0.0",
+  "description": "Send multicast notifications through the FCM HTTP v1 API on Cloudflare Workers.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "/dist"
+    "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/kenble/fcm-http2.git"
+    "url": "git+https://github.com/celestifyhq/fcm-cloudflare-workers.git"
   },
   "scripts": {
+    "dev": "wrangler dev",
     "test": "npx ts-node test/test.ts",
     "build": "tsc",
     "publish-lib": "npm run build && npm publish"
   },
-  "author": "Taddia Francesco <fctaddia@duck.com>",
+  "author": "Paras Daryanani <paras@celestify.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/kenble/fcm-http2/-/issues"
+    "url": "https://github.com/celestifyhq/fcm-cloudflare-workers/issues"
   },
-  "homepage": "https://gitlab.com/kenble/fcm-http2/-/blob/main/README.md",
+  "homepage": "https://github.com/celestifyhq/fcm-cloudflare-workers#readme",
   "keywords": [
     "fcm",
     "firebase",
     "typescript",
-    "library"
+    "library",
+    "cloudflare",
+    "workers"
   ],
   "dependencies": {
-    "async": "~3.2.6",
-    "googleapis": "~142.0.0"
+    "@tsndr/cloudflare-worker-jwt": "^2.5.3"
   },
   "devDependencies": {
-    "@types/async": "~3.2.24",
-    "@types/node": "~22.5.0",
-    "typescript": "~5.5.4"
+    "typescript": "~5.5.4",
+    "wrangler": "^3.73.0"
+  },
+  "peerDependencies": {
+    "@hono/zod-validator": "^0.2.2",
+    "hono": "^4.5.10",
+    "zod": "^3.23.8"
   }
 }

@@ -1,0 +1,9 @@
+name = "fcm-cloudflare-workers"
+compatibility_date = "2024-07-01"
+
+main = "./fixtures/index.ts"
+
+[vars]
+# The necessary secrets are:
+# - FIREBASE_PROJECT_ID
+# - FIREBASE_SERVICE_ACCOUNT_JSON

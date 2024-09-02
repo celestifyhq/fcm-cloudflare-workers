@@ -2,17 +2,11 @@ import { FcmServiceAccount } from "./fcm-service-account";
 
 /**
  * Entity for Firebase Cloud Messaging options.
- *
- * @author Kenble - f.taddia
  */
 export class FcmOptions {
-
     serviceAccount?: FcmServiceAccount;
-
     maxConcurrentConnections: number;
-
     maxConcurrentStreamsAllowed: number;
-
 
     constructor(entity?: FcmOptions) {
         this.maxConcurrentConnections = 10;
@@ -23,5 +17,4 @@ export class FcmOptions {
             this.maxConcurrentStreamsAllowed = entity.maxConcurrentStreamsAllowed || 100;
         }
     }
-
 }

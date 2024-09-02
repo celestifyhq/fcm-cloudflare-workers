@@ -1,10 +1,11 @@
-# fcm-http2
+# fcm-cloudflare-workers
 
-[![npm version](https://badge.fury.io/js/fcm-http2.svg)](https://badge.fury.io/js/fcm-http2)
+[![npm version](https://badge.fury.io/js/fcm-cloudflare-workers.svg)](https://badge.fury.io/js/fcm-cloudflare-workers)
 
-Library in typescript for sending multicast notifications using HTTP/2 multiplexing and the [FCM HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send).
+Send multicast notifications using the [FCM HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send).
+This project is a fork of [fcm-http2](https://www.npmjs.com/package/fcm-http2) and has been modified to work with Cloudflare Workers.
 
-Features supported by **fcm-http2**:
+Features supported by **fcm-cloudflare-workers**:
 
 - [X] HTTP/2 session & stream concurrency
 - [X] Token batching support
@@ -16,25 +17,18 @@ Features supported by **fcm-http2**:
 First you need to install the library via npm:
 
 ```shell
-npm i fcm-http2
+npm i fcm-cloudflare-workers
 ```
 
 Once the library has been installed you can start using it in this way:
 
 ```js
-// FCM library recovery
-import { FCM } from 'src/lib/fcm';
-import { FcmOptions } from 'src/entity/fcm-options';
+import { FCM, FcmOptions, FcmMessage } from "fcm-cloudflare-workers";
 
-// Init FCM with default options
-// NOTE: Put the service-account.json file in the package's lib directory
-const fcmClient = new FCM();
-
-// Or you can specify options
-
+// Init FCM with options
 const fcmOptions = new FcmOptions(
     // Pass in your service account JSON private key file (https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk)
-    serviceAccount: require('./service-account.json'),
+    serviceAccount: JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON),
     // Max number of concurrent HTTP/2 sessions (connections)
     maxConcurrentConnections: 10,
     // Max number of concurrent streams (requests) per session
@@ -56,7 +50,7 @@ const message = {
     data: {
         notification: "true"
     }
-};
+} as FcmMessage;
 
 // Multiple sending of notification using token array
 fcmClient.sendMulticast(message, tokens).then(unregisteredTokens => {
@@ -72,14 +66,14 @@ fcmClient.sendMulticast(message, tokens).then(unregisteredTokens => {
 }).catch(error => console.log(error));
 ```
 
-## Requirements
+## Dependencies
 
-* Node.js >= 12
+* [@tsndr/cloudflare-worker-jwt](https://www.npmjs.com/package/@tsndr/cloudflare-worker-jwt)
 
 ## Contributions
 
-Thanks to [eladnava](https://github.com/eladnava) for contributing to the source code base of this library.
+This repo is based on previous work by [kenble](https://gitlab.com/kenble) and [eladnava](https://github.com/eladnava).
 
 ## Support
 
-For any doubts open an issue or contact this email **fctaddia@duck.com**
+Please open an issue on this repo if you have any questions or need support.
