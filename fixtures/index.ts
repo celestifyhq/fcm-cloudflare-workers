@@ -3,8 +3,7 @@ import { fcmMiddleware } from "./fcm.middleware";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { StatusCode } from "hono/utils/http-status";
-import { FCM } from "../src/lib/fcm";
-import { FcmMessage } from "../src/entity/fcm-message";
+import { FCM, FcmMessage } from "fcm-cloudflare-workers";
 
 type Bindings = {
   FIREBASE_PROJECT_ID: string; // Firebase project ID

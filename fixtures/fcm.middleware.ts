@@ -1,6 +1,5 @@
 import type { Context, MiddlewareHandler } from "hono";
-import { FcmOptions } from '../src/entity/fcm-options';
-import { FCM } from '../src/lib/fcm';
+import { FCM, FcmOptions } from 'fcm-cloudflare-workers';
 
 import { env } from "hono/adapter";
 
