@@ -1,28 +1,17 @@
 import { FcmMessage } from "../entity/fcm-message";
 import { FcmOptions } from "../entity/fcm-options";
-import { FcmServiceAccount } from "../entity/fcm-service-account";
 import { sign } from "@tsndr/cloudflare-worker-jwt";
+import { FcmErrorResponse, FcmTokenResponse } from "../entity/fcm-responses";
 
 /**
  * Class for sending a notification to multiple devices.
  */
 export class FCM {
-  private readonly fcmOptions: FcmOptions = new FcmOptions();
+  private readonly fcmOptions: FcmOptions;
   private readonly fcmHost: string = "https://fcm.googleapis.com";
-  private readonly fcmScopes: Array<string> = [
-    "https://www.googleapis.com/auth/firebase.messaging",
-  ];
 
-  constructor(options?: FcmOptions) {
-    if (options) {
-      this.fcmOptions.serviceAccount = options.serviceAccount;
-      this.fcmOptions.maxConcurrentConnections =
-        options.maxConcurrentConnections ||
-        this.fcmOptions.maxConcurrentConnections;
-      this.fcmOptions.maxConcurrentStreamsAllowed =
-        options.maxConcurrentStreamsAllowed ||
-        this.fcmOptions.maxConcurrentStreamsAllowed;
-    }
+  constructor(options: FcmOptions) {
+    this.fcmOptions = options;
 
     if (!this.fcmOptions.serviceAccount) {
       throw new Error(
@@ -70,9 +59,7 @@ export class FCM {
     }
 
     try {
-      const accessToken = await this.getAccessToken(
-        this.fcmOptions.serviceAccount
-      );
+      const accessToken = await this.getAccessToken();
 
       const results = await Promise.allSettled(
         tokenBatches.map((batch) =>
@@ -95,20 +82,32 @@ export class FCM {
     }
   }
 
-  private async getAccessToken(
-    serviceAccount: FcmServiceAccount
-  ): Promise<string> {
+  private async getAccessToken(): Promise<string> {
+    if (!this.fcmOptions.serviceAccount) {
+      throw new Error("Service account is not defined.");
+    }
+
+    // Try to get the cached access token if KV store is configured
+    if (this.fcmOptions.kvStore && this.fcmOptions.kvCacheKey) {
+      const cachedAccessToken = await this.getCachedAccessToken();
+      if (cachedAccessToken) {
+        return cachedAccessToken;
+      }
+    }
+
+    // Generate a new JWT
     const now = Math.floor(Date.now() / 1000);
+    const ttl = 3600; // 1 hour
     const payload = {
-      iss: serviceAccount.client_email,
+      iss: this.fcmOptions.serviceAccount.client_email,
       scope: "https://www.googleapis.com/auth/firebase.messaging",
       aud: "https://oauth2.googleapis.com/token",
-      exp: now + 3600,
+      exp: now + ttl,
       iat: now,
     };
 
     try {
-      const jwt = await sign(payload, serviceAccount.private_key, {
+      const jwt = await sign(payload, this.fcmOptions.serviceAccount.private_key, {
         algorithm: "RS256",
         header: { typ: "JWT" },
       });
@@ -125,14 +124,50 @@ export class FCM {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      return data.access_token;
+      const data = await response.json() as FcmTokenResponse;
+      const newAccessToken = data.access_token;
+
+      // Store the new access token in KV if configured
+      if (this.fcmOptions.kvStore && this.fcmOptions.kvCacheKey) {
+        await this.cacheAccessToken(newAccessToken, ttl);
+      }
+      
+      return newAccessToken;
     } catch (error) {
       console.error("Error getting access token:", error);
       throw error;
     }
   }
 
+  private async getCachedAccessToken(): Promise<string | null> {
+    if (!this.fcmOptions.kvStore || !this.fcmOptions.kvCacheKey) {
+      return null;
+    }
+
+    try {
+      const cachedAccessToken = await this.fcmOptions.kvStore.get(this.fcmOptions.kvCacheKey);
+      if (cachedAccessToken) {
+        return cachedAccessToken;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error retrieving cached access token:", error);
+      return null;
+    }
+  }
+
+  private async cacheAccessToken(accessToken: string, ttl: number): Promise<void> {
+    if (!this.fcmOptions.kvStore || !this.fcmOptions.kvCacheKey) {
+      return;
+    }
+
+    try {
+      await this.fcmOptions.kvStore.put(this.fcmOptions.kvCacheKey, accessToken, { expirationTtl: ttl });
+    } catch (error) {
+      console.error("Error caching access token:", error);
+    }
+  }
+  
   private async processBatch(
     message: any,
     devices: Array<string>,
@@ -165,7 +200,7 @@ export class FCM {
 
     return unregisteredTokens;
   }
-
+  
   private async sendRequest(
     device: string,
     message: any,
@@ -187,7 +222,7 @@ export class FCM {
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json() as FcmErrorResponse;
 
         if (response.status >= 500 && tries < 3) {
           console.warn("Server error, retrying...", data);

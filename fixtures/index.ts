@@ -8,6 +8,7 @@ import { FCM, FcmMessage } from "fcm-cloudflare-workers";
 type Bindings = {
   FIREBASE_PROJECT_ID: string; // Firebase project ID
   FIREBASE_SERVICE_ACCOUNT_JSON: string; // Firebase service account JSON
+  MY_WORKER_CACHE: KVNamespace; // Worker KV namespace
 };
 
 type Variables = {
@@ -25,7 +26,7 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>().basePath(
   "/api"
 );
 
-app.use("*", fcmMiddleware);
+app.use(fcmMiddleware);
 
 const sendSinglePushSchema = z.object({
   deviceToken: z.string(),

@@ -25,18 +25,22 @@ Once the library has been installed you can start using it in this way:
 ```js
 import { FCM, FcmOptions, FcmMessage } from "fcm-cloudflare-workers";
 
-// Init FCM with options
+// Init FCM with options (minimal example)
 const fcmOptions = new FcmOptions(
     // Pass in your service account JSON private key file (https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk)
     serviceAccount: JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON),
-    // Max number of concurrent HTTP/2 sessions (connections)
-    maxConcurrentConnections: 10,
-    // Max number of concurrent streams (requests) per session
-    maxConcurrentStreamsAllowed: 100
+);
+
+// Or, init FCM with access token caching using KV (optional but recommended for performance)
+const fcmOptions = new FcmOptions(
+    serviceAccount: JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON),
+    // Specify a KV namespace
+    kvStoreName: env.MY_KV_NAMESPACE,
+    // Specify a key to use for caching the access token
+    kvCacheKey: 'fcm_access_token',
 );
 
 const fcmClient = new FCM(fcmOptions);
-
 
 // Token to send the notification to
 const tokens = ['TOKEN_1', 'TOKEN_N'];
