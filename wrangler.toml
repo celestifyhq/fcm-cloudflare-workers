@@ -7,3 +7,8 @@ main = "./fixtures/index.ts"
 # The necessary secrets are:
 # - FIREBASE_PROJECT_ID
 # - FIREBASE_SERVICE_ACCOUNT_JSON
+
+[[kv_namespaces]]
+binding = "MY_WORKER_CACHE"
+id = "test-id"
+preview_id = "test-id"
