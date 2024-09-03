@@ -1,6 +1,6 @@
 {
   "name": "fcm-cloudflare-workers",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Send multicast notifications through the FCM HTTP v1 API on Cloudflare Workers.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
