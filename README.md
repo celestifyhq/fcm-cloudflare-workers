@@ -11,6 +11,7 @@ Features supported by **fcm-cloudflare-workers**:
 - [X] Token batching support
 - [X] Uninstall detection
 - [X] Retry mechanism
+- [X] (Optional) Access token caching using KV
 
 ## How to use?
 
@@ -35,39 +36,43 @@ const fcmOptions = new FcmOptions(
 const fcmOptions = new FcmOptions(
     serviceAccount: JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON),
     // Specify a KV namespace
-    kvStoreName: env.MY_KV_NAMESPACE,
+    kvStore: env.MY_KV_NAMESPACE,
     // Specify a key to use for caching the access token
     kvCacheKey: 'fcm_access_token',
 );
 
 const fcmClient = new FCM(fcmOptions);
 
-// Token to send the notification to
-const tokens = ['TOKEN_1', 'TOKEN_N'];
+// Recipient device tokens
+const tokens = ["TOKEN_1", "TOKEN_N"];
 
-// Composing the message to be sent
+// Message to send
 const message = {
-    notification: {
-        title: "Test",
-        body: "Multiple Send"
-    },
-    data: {
-        notification: "true"
-    }
-} as FcmMessage;
+  notification: {
+    title: "Test",
+    body: "Hello from Cloudflare Workers",
+  },
+  data: {
+    notification: "true",
+  },
+} satisfies FcmMessage;
 
-// Multiple sending of notification using token array
-fcmClient.sendMulticast(message, tokens).then(unregisteredTokens => {
+try {
+  const unregisteredTokens = await fcmClient.sendMulticast(message, tokens);
 
-    // Sending successful
-    console.log('Message sent successfully');
+  // Sending successful
+  console.log("Message sent successfully");
 
-    // Remove unregistered tokens from your database
-    if (unregisteredTokens.length > 0) {
-        console.log('Unregistered device token(s): ', unregisteredTokens.join(', '));
-    }
-
-}).catch(error => console.log(error));
+  // Remove unregistered tokens from your database
+  if (unregisteredTokens.length > 0) {
+    console.log(
+      "Unregistered device token(s): ",
+      unregisteredTokens.join(", ")
+    );
+  }
+} catch (error) {
+  console.log("Sending failed", error.message);
+}
 ```
 
 ## Dependencies
