@@ -76,10 +76,6 @@ try {
 }
 ```
 
-## Dependencies
-
-* [@tsndr/cloudflare-worker-jwt](https://www.npmjs.com/package/@tsndr/cloudflare-worker-jwt)
-
 ## Contributions
 
 This repo is based on previous work by [kenble](https://gitlab.com/kenble) and [eladnava](https://github.com/eladnava).
