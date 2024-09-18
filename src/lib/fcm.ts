@@ -1,7 +1,7 @@
 import { FcmMessage } from "../entity/fcm-message";
 import { FcmOptions } from "../entity/fcm-options";
-import { sign } from "@tsndr/cloudflare-worker-jwt";
 import { FcmErrorResponse, FcmTokenResponse } from "../entity/fcm-responses";
+import { createJWT } from "./crypto-utils";
 
 /**
  * Class for sending a notification to multiple devices.
@@ -107,10 +107,10 @@ export class FCM {
     };
 
     try {
-      const jwt = await sign(payload, this.fcmOptions.serviceAccount.private_key, {
-        algorithm: "RS256",
-        header: { typ: "JWT" },
-      });
+      const jwt = await createJWT(
+        payload,
+        this.fcmOptions.serviceAccount.private_key
+      );
 
       const response = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
@@ -124,14 +124,14 @@ export class FCM {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json() as FcmTokenResponse;
+      const data = (await response.json()) as FcmTokenResponse;
       const newAccessToken = data.access_token;
 
       // Store the new access token in KV if configured
       if (this.fcmOptions.kvStore && this.fcmOptions.kvCacheKey) {
-        await this.cacheAccessToken(newAccessToken, ttl);
+        await this.cacheAccessToken(newAccessToken, ttl - 60);
       }
-      
+
       return newAccessToken;
     } catch (error) {
       console.error("Error getting access token:", error);
@@ -145,7 +145,9 @@ export class FCM {
     }
 
     try {
-      const cachedAccessToken = await this.fcmOptions.kvStore.get(this.fcmOptions.kvCacheKey);
+      const cachedAccessToken = await this.fcmOptions.kvStore.get(
+        this.fcmOptions.kvCacheKey
+      );
       if (cachedAccessToken) {
         return cachedAccessToken;
       }
@@ -156,18 +158,25 @@ export class FCM {
     }
   }
 
-  private async cacheAccessToken(accessToken: string, ttl: number): Promise<void> {
+  private async cacheAccessToken(
+    accessToken: string,
+    ttl: number
+  ): Promise<void> {
     if (!this.fcmOptions.kvStore || !this.fcmOptions.kvCacheKey) {
       return;
     }
 
     try {
-      await this.fcmOptions.kvStore.put(this.fcmOptions.kvCacheKey, accessToken, { expirationTtl: ttl });
+      await this.fcmOptions.kvStore.put(
+        this.fcmOptions.kvCacheKey,
+        accessToken,
+        { expirationTtl: ttl }
+      );
     } catch (error) {
       console.error("Error caching access token:", error);
     }
   }
-  
+
   private async processBatch(
     message: any,
     devices: Array<string>,
@@ -200,7 +209,7 @@ export class FCM {
 
     return unregisteredTokens;
   }
-  
+
   private async sendRequest(
     device: string,
     message: any,
@@ -222,11 +231,13 @@ export class FCM {
       });
 
       if (!response.ok) {
-        const data = await response.json() as FcmErrorResponse;
+        const data = (await response.json()) as FcmErrorResponse;
 
         if (response.status >= 500 && tries < 3) {
           console.warn("Server error, retrying...", data);
-          await new Promise((resolve) => setTimeout(resolve, 1000 * (tries + 1)));
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 * (tries + 1))
+          );
           return this.sendRequest(
             device,
             message,
@@ -241,7 +252,11 @@ export class FCM {
         ) {
           throw new Error("UNREGISTERED");
         } else {
-          throw new Error(`HTTP error! status: ${response.status}, message: ${data.error?.message || response.statusText}`);
+          throw new Error(
+            `HTTP error! status: ${response.status}, message: ${
+              data.error?.message || response.statusText
+            }`
+          );
         }
       }
     } catch (error) {

@@ -12,6 +12,7 @@ Features supported by **fcm-cloudflare-workers**:
 - [X] Uninstall detection
 - [X] Retry mechanism
 - [X] (Optional) Access token caching using KV
+- [X] Zero dependencies
 
 ## How to use?
 
