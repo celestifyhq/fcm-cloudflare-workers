@@ -12,6 +12,7 @@ Features supported by **fcm-cloudflare-workers**:
 - [X] Uninstall detection
 - [X] Retry mechanism
 - [X] (Optional) Access token caching using KV
+- [X] Zero dependencies
 
 ## How to use?
 
@@ -74,10 +75,6 @@ try {
   console.log("Sending failed", error.message);
 }
 ```
-
-## Dependencies
-
-* [@tsndr/cloudflare-worker-jwt](https://www.npmjs.com/package/@tsndr/cloudflare-worker-jwt)
 
 ## Contributions
 

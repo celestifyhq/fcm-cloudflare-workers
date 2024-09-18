@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { StatusCode } from "hono/utils/http-status";
 import { FCM, FcmMessage } from "fcm-cloudflare-workers";
+import { KVNamespace } from "@cloudflare/workers-types";
 
 type Bindings = {
   FIREBASE_PROJECT_ID: string; // Firebase project ID
