@@ -1,31 +1,37 @@
 import { Hono } from "hono";
-import { fcmMiddleware } from "./fcm.middleware";
+import { fcmMiddleware, FcmMiddlewareBindings, FcmMiddlewareVariables } from "./fcm.middleware";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { StatusCode } from "hono/utils/http-status";
 import { FCM, FcmMessage, EnhancedFcmMessage } from "fcm-cloudflare-workers";
-import { KVNamespace } from "@cloudflare/workers-types";
 
-type Bindings = {
-  FIREBASE_PROJECT_ID: string; // Firebase project ID
-  FIREBASE_SERVICE_ACCOUNT_JSON: string; // Firebase service account JSON
-  MY_WORKER_CACHE: KVNamespace; // Worker KV namespace
+type AppBindings = FcmMiddlewareBindings & {
+  // ANOTHER_KV: KVNamespace;
 };
 
-type Variables = {
+type AppVariables = FcmMiddlewareVariables & {
   error: {
     response: (
       StatusCode: StatusCode,
       message: string,
       description: string
-    ) => void;
+    ) => Response;
   };
-  fcm: FCM,
 };
 
-const app = new Hono<{ Bindings: Bindings; Variables: Variables }>().basePath(
+const app = new Hono<{ Bindings: AppBindings; Variables: AppVariables }>().basePath(
   "/api"
 );
+
+app.use(async (c, next) => {
+  c.set("error", {
+    response: (statusCode, message, description) => {
+      console.error(`Error: ${message} - ${description}`);
+      return c.json({ error: message, description }, statusCode);
+    },
+  });
+  await next();
+});
 
 app.use(fcmMiddleware);
 
@@ -92,7 +98,7 @@ app.post("/push-single", zValidator("json", sendSinglePushSchema), async (c) => 
     }
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 
   return c.json({ success: true });
@@ -119,7 +125,7 @@ app.post("/push-multi", zValidator("json", sendMultiPushSchema), async (c) => {
     }
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 
   return c.json({ success: true });
@@ -136,7 +142,7 @@ app.post("/v2/push-token", zValidator("json", z.object({
     return c.json({ success: true });
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 });
 
@@ -154,7 +160,7 @@ app.post("/v2/push-tokens", zValidator("json", z.object({
     });
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 });
 
@@ -169,7 +175,7 @@ app.post("/v2/push-topic", zValidator("json", z.object({
     return c.json({ success: true });
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 });
 
@@ -184,7 +190,7 @@ app.post("/v2/push-condition", zValidator("json", z.object({
     return c.json({ success: true });
   } catch (error) {
     console.log(error);
-    return c.var.error.response(400, "Sending Failed", error.message);
+    return c.var.error.response(400, "Sending Failed", (error as Error).message);
   }
 });
 
