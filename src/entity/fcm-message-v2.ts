@@ -44,34 +44,37 @@ export interface AndroidConfig {
 }
 
 export interface ApnsPayload {
-    alert?: {
-        title?: string;
-        subtitle?: string;
-        body?: string;
-        launch_image?: string;
-        title_loc_key?: string;
-        title_loc_args?: string[];
-        subtitle_loc_key?: string;
-        subtitle_loc_args?: string[];
-        loc_key?: string;
-        loc_args?: string[];
+    aps: {
+        alert?: {
+            title?: string;
+            subtitle?: string;
+            body?: string;
+            launch_image?: string;
+            title_loc_key?: string;
+            title_loc_args?: string[];
+            subtitle_loc_key?: string;
+            subtitle_loc_args?: string[];
+            loc_key?: string;
+            loc_args?: string[];
+        };
+        badge?: number;
+        sound?: string | {
+            critical?: boolean;
+            name?: string;
+            volume?: number;
+        };
+        thread_id?: string;
+        category?: string;
+        content_available?: boolean;
+        mutable_content?: boolean;
+        target_content_id?: string;
+        interruption_level?: string;
+        relevance_score?: number;
+        filter_criteria?: string;
+        stale_date?: number;
+        content_state?: { [key: string]: any };
     };
-    badge?: number;
-    sound?: string | {
-        critical?: boolean;
-        name?: string;
-        volume?: number;
-    };
-    thread_id?: string;
-    category?: string;
-    content_available?: boolean;
-    mutable_content?: boolean;
-    target_content_id?: string;
-    interruption_level?: string;
-    relevance_score?: number;
-    filter_criteria?: string;
-    stale_date?: number;
-    content_state?: { [key: string]: any };
+    [key: string]: any;
 }
 
 export interface ApnsConfig {
