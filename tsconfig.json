@@ -7,7 +7,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "fcm-cloudflare-workers": ["src/index.ts"]
+    }
   },
   "include": [
     "src/**/*"
