@@ -1,5 +1,11 @@
 # fcm-cloudflare-workers
 
+## 2.0.1
+
+### Patch Changes
+
+- 7b9ea40: Corrected ApnsPayload typescript interface to match spec.
+
 ## 2.0.0
 
 ### Major Changes
