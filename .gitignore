@@ -1,5 +1,4 @@
 dist/*
-test/*
 .vscode/
 node_modules/
 .dev.vars
