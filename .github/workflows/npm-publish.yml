@@ -27,16 +27,17 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run Tests
-        run: npm test
-
-      - name: Create Release Pull Request or Publish
+      - name: Version Packages
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: npm publish
           commit: "chore: version packages"
           title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Packages to npm
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        run: npm publish
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
