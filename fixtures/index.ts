@@ -12,7 +12,7 @@ type AppBindings = FcmMiddlewareBindings & {
 type AppVariables = FcmMiddlewareVariables & {
   error: {
     response: (
-      StatusCode: StatusCode,
+      statusCode: number,
       message: string,
       description: string
     ) => Response;
@@ -27,7 +27,7 @@ app.use(async (c, next) => {
   c.set("error", {
     response: (statusCode, message, description) => {
       console.error(`Error: ${message} - ${description}`);
-      return c.json({ error: message, description }, statusCode);
+      return c.json({ error: message, description }, statusCode as any);
     },
   });
   await next();
