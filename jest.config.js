@@ -4,6 +4,6 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)', '!**/*.d.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '^fcm-cloudflare-workers$': '<rootDir>/dist/index.js',
+    '^fcm-cloudflare-workers$': '<rootDir>/src/index.ts',
   },
 }; 
