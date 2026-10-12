@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write # push version branch and release tags
+  pull-requests: write # open/update the "chore: version packages" PR
+  id-token: write # npm trusted publishing (OIDC) + provenance
+
 jobs:
   release:
     name: Release
@@ -18,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24 # bundles npm >= 11.5.1, required for trusted publishing
           registry-url: https://registry.npmjs.org/
 
       - name: Install Dependencies
@@ -27,17 +34,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Version Packages
+      # With pending changesets: opens/updates the "chore: version packages" PR.
+      # With none (i.e. after that PR is merged): runs `publish`, which publishes
+      # any version not yet on npm and pushes a git tag + GitHub release.
+      - name: Create Release PR or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           commit: "chore: version packages"
           title: "chore: version packages"
+          publish: npx changeset publish
         env:
+          # npm auth uses trusted publishing (OIDC), configured on npmjs.com for
+          # this repo + workflow file. No npm token secret is needed.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish Packages to npm
-        if: steps.changesets.outputs.hasChangesets == 'true'
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

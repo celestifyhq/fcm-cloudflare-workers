@@ -45,15 +45,11 @@ This project uses [Changesets](https://github.com/changesets/changesets) to mana
 6.  **Merge the Pull Request**:
     Once the PR is reviewed and approved, merge it into the `main` branch.
 
-7.  **Automatic Versioning and Publishing**:
+7.  **Automatic Version PR**:
     *   Upon merging to `main`, the `Publish to npm` GitHub Action (defined in `.github/workflows/npm-publish.yml`) will trigger.
-    *   This action uses the changeset to:
-        *   Bump the version in `package.json`.
-        *   Update `CHANGELOG.md`.
-        *   Publish the new version to npm.
-        *   Create a new PR titled "chore: version packages" (or similar) which contains the version bump and changelog updates.
+    *   Because there are pending changesets, the action opens (or updates) a PR titled "chore: version packages" that bumps the version in `package.json`, updates `CHANGELOG.md` and removes the consumed changeset files. Nothing is published at this point.
 
 8.  **Merge the Versioning Pull Request**:
-    Review and merge the "chore: version packages" PR created by the Changesets action. This finalizes the release process by updating the `package.json` and `CHANGELOG.md` on the `main` branch.
+    Review and merge the "chore: version packages" PR. The action runs again on `main`, finds no pending changesets, and runs `npx changeset publish`, which publishes the new version to npm via trusted publishing (OIDC, with provenance; no npm token involved) and pushes a git tag and GitHub release.
 
-Your package is now published with the new version! 
+Your package is now published with the new version!
