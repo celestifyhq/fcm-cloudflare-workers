@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write # push version branch and release tags
+  pull-requests: write # open/update the "chore: version packages" PR
+  id-token: write # npm provenance
+
 jobs:
   release:
     name: Release
@@ -27,17 +34,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Version Packages
+      # With pending changesets: opens/updates the "chore: version packages" PR.
+      # With none (i.e. after that PR is merged): runs `publish`, which publishes
+      # any version not yet on npm and pushes a git tag + GitHub release.
+      - name: Create Release PR or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           commit: "chore: version packages"
           title: "chore: version packages"
+          publish: npx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish Packages to npm
-        if: steps.changesets.outputs.hasChangesets == 'true'
-        run: npm publish
-        env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
