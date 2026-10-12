@@ -1,5 +1,11 @@
 # fcm-cloudflare-workers
 
+## 2.0.2
+
+### Patch Changes
+
+- 4471546: `sendToTokens` and `sendToToken` now treat FCM's `UNREGISTERED` (404) response as an unregistered token. Before, only the 400 "not a valid FCM registration token" message was matched, so tokens from uninstalled apps were logged as errors and never returned.
+
 ## 2.0.1
 
 ### Patch Changes
