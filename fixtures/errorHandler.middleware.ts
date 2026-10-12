@@ -1,12 +1,12 @@
 import type { Context, MiddlewareHandler } from "hono";
-import { StatusCode } from "hono/utils/http-status";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 export const errorHandlerMiddleware: MiddlewareHandler = async (
   c: Context,
   next: any,
 ) => {
   const createErrorMessageResponse = (
-    httpCode: StatusCode,
+    httpCode: ContentfulStatusCode,
     message: string,
     description: string,
   ) => {
