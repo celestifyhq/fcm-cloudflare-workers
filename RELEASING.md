@@ -50,6 +50,6 @@ This project uses [Changesets](https://github.com/changesets/changesets) to mana
     *   Because there are pending changesets, the action opens (or updates) a PR titled "chore: version packages" that bumps the version in `package.json`, updates `CHANGELOG.md` and removes the consumed changeset files. Nothing is published at this point.
 
 8.  **Merge the Versioning Pull Request**:
-    Review and merge the "chore: version packages" PR. The action runs again on `main`, finds no pending changesets, and runs `npx changeset publish`, which publishes the new version to npm (with provenance) and pushes a git tag and GitHub release.
+    Review and merge the "chore: version packages" PR. The action runs again on `main`, finds no pending changesets, and runs `npx changeset publish`, which publishes the new version to npm via trusted publishing (OIDC, with provenance; no npm token involved) and pushes a git tag and GitHub release.
 
 Your package is now published with the new version!
