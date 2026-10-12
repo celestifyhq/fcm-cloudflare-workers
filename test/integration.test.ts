@@ -140,4 +140,23 @@ describe('FCM Library Hono Integration Tests', () => {
     expect(outboundFetchSpy).toHaveBeenCalledTimes(1 + tokens.length); 
   });
 
-}); 
+  it('rejects an invalid body via zod validation with 400 and no FCM calls', async () => {
+    const req = new Request('http://localhost/api/v2/push-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // token must be a string; notification.title is missing; priority is not in the enum
+      body: JSON.stringify({
+        token: 123,
+        message: {
+          notification: { body: 'Body only' },
+          android: { priority: 'urgent' },
+        },
+      }),
+    });
+
+    const res = await app.request(req, undefined, MOCK_ENV);
+    expect(res.status).toBe(400);
+    expect(outboundFetchSpy).not.toHaveBeenCalled();
+  });
+
+});
