@@ -325,6 +325,16 @@ export class FCM {
     return unregisteredTokens;
   }
 
+  // a token that was valid and is now gone comes back as 404 with errorCode UNREGISTERED.
+  // match the code, not the bare 404, so an unrelated NOT_FOUND is never reported as a dead token
+  private isUnregistered(data: FcmErrorResponse): boolean {
+    return (
+      data.error?.details?.some((d) => d.errorCode === "UNREGISTERED") ||
+      data.error?.message?.includes("not a valid FCM registration token") ||
+      false
+    );
+  }
+
   /**
    * @deprecated This is an internal method that will be removed in a future version.
    * Use sendToToken, sendToTokens, sendToTopic, or sendToCondition instead.
@@ -365,11 +375,7 @@ export class FCM {
             accessToken,
             tries + 1
           );
-        } else if (
-          response.status === 400 &&
-          data.error &&
-          data.error.message.includes("not a valid FCM registration token")
-        ) {
+        } else if (this.isUnregistered(data)) {
           throw new Error("UNREGISTERED");
         } else {
           throw new Error(
@@ -402,7 +408,7 @@ export class FCM {
 
       if (!response.ok) {
         const data = (await response.json()) as FcmErrorResponse;
-        if (message.token && data.error?.message?.includes("not a valid FCM registration token")) {
+        if (message.token && this.isUnregistered(data)) {
           throw new Error("UNREGISTERED");
         }
         throw new Error(

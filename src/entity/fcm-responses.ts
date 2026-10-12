@@ -3,6 +3,7 @@ export interface FcmErrorResponse {
     code: number;
     message: string;
     status: string;
+    details?: Array<{ "@type"?: string; errorCode?: string }>;
   };
 }
 
